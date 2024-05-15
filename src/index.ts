@@ -1,21 +1,29 @@
-import { Hono } from 'hono'
-import auth from './auth'
-import { Bindings } from '../lib/utils'
+import { Hono } from "hono";
+import auth from "./routers/auth";
+import chat from "./routers/chat";
 
+import { Bindings } from "../lib/utils";
 
-const app = new Hono < { Bindings: Bindings }>()
+const app = new Hono<{ Bindings: Bindings }>();
 
-app.route("/auth", auth)
+app.route("/auth", auth);
+app.route("/chat", chat)
+
 
 app.notFound((c) => {
-  return c.json({
-    message: "Route not found.",
-    error: true,
-  }, 404)
-})
+	return c.json(
+		{
+			message: "Route not found.",
+			error: true,
+		},
+		404
+	);
+});
 
-app.get('/', (c) => {
-  return c.text('Server running')
-})
+app.get("/", (c) => {
+	return c.json({
+		message: "Server is running.",
+	});
+});
 
-export default app
+export default app;
