@@ -4,6 +4,7 @@ import {
 	integer as int,
 } from "drizzle-orm/sqlite-core";
 import { nanoid } from "nanoid";
+
 // some helpers
 const timestamp = (n: string) => int(n, { mode: "timestamp" });
 const bool = (n: string) => int(n, { mode: "boolean" });
@@ -37,9 +38,6 @@ export const otps = st("otp", {
 	createdAt,
 });
 
-// relations
-// ...
-
 export const messages = st("message", {
 	id: idPrimary,
 	text: text("text", { length: 5000 }).notNull(),
@@ -49,3 +47,7 @@ export const messages = st("message", {
 	createdAt,
 	updatedAt,
 });
+
+// relations
+// ...
+
