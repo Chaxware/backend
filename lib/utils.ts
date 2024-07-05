@@ -1,7 +1,7 @@
 export type Bindings = {
-    DATABASE_URL: string,
-    DATABASE_TOKEN: string,
-}
+  DATABASE_URL: string;
+  DATABASE_TOKEN: string;
+};
 
 // import { rateLimiter } from "hono-rate-limiter";
 
@@ -11,4 +11,4 @@ export type Bindings = {
 // 	standardHeaders: "draft-6", // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
 // 	keyGenerator: (c) => c.req.header('cf-connecting-ip') ?? "<noid>", // Method to generate custom identifiers for clients.
 // })
-// TODO: implement limiter with @elithrar's package. 
+// TODO: implement limiter with @elithrar's package.

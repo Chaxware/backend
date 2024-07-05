@@ -7,23 +7,22 @@ import { Bindings } from "../lib/utils";
 const app = new Hono<{ Bindings: Bindings }>();
 
 app.route("/auth", auth);
-app.route("/chat", chat)
-
+app.route("/chat", chat);
 
 app.notFound((c) => {
-	return c.json(
-		{
-			message: "Route not found.",
-			error: true,
-		},
-		404
-	);
+  return c.json(
+    {
+      message: "Route not found.",
+      error: true,
+    },
+    404,
+  );
 });
 
 app.get("/", (c) => {
-	return c.json({
-		message: "Server is running.",
-	});
+  return c.json({
+    message: "Server is running.",
+  });
 });
 
 export default app;
