@@ -4,11 +4,12 @@ import { zValidator } from "@hono/zod-validator";
 import { upgradeWebSocket } from "hono/cloudflare-workers";
 import { z } from "zod";
 import { dbInstance } from "../../lib/db";
-import { messages } from "../../lib/schema";
+import { eq } from "drizzle-orm";
+import { hubs, channels, messages } from "../../lib/schema";
 
 const chat = new Hono<{ Bindings: Bindings }>();
 
-// Websocket!
+// WebSocket!
 chat.get(
   "/ws",
   upgradeWebSocket((c) => {
@@ -28,39 +29,100 @@ chat.get(
 // Get initial messages
 chat.get("/", async (c) => {
   const db = dbInstance(c.env);
-  const messages = await db.query.messages.findMany();
+  const allHubs = await db.query.hubs.findMany({
+    with: {
+      channels: true,
+    },
+  });
+  return c.json({ hubs: allHubs });
+});
 
-  // Using this to avoid accidentally leaking some important data
-  const filtered = messages.map((v) => ({
-    id: v.id,
-    text: v.text,
-    createdAt: v.createdAt,
-  }));
+chat.get("/:hubId", async (c) => {
+  const db = dbInstance(c.env);
+  const hubId = c.req.param("hubId");
+  const hub = await db.query.hubs.findFirst({
+    where: eq(hubs.id, hubId),
+    with: {
+      channels: true,
+    },
+  });
+  if (!hub) {
+    return c.json({ error: "Hub not found" }, 404);
+  }
+  return c.json(hub);
+});
 
-  return c.json({ messages: filtered });
+chat.get("/:hubId/:channelId", async (c) => {
+  const db = dbInstance(c.env);
+  const hubId = c.req.param("hubId");
+  const channelId = c.req.param("channelId");
+
+  const channel = await db.query.channels.findFirst({
+    where: eq(channels.id, channelId),
+    with: {
+      messages: {
+        orderBy: (messages, { desc }) => [desc(messages.createdAt)],
+        limit: 50,
+      },
+    },
+  });
+
+  if (!channel || channel.hubId !== hubId) {
+    return c.json({ error: "Channel not found" }, 404);
+  }
+
+  return c.json(channel);
 });
 
 chat.post(
-  "/send",
+  "/:hubId/:channelId",
   zValidator(
     "json",
     z.object({
-      text: z.string().min(6).max(5000), // Meaningful phrase
+      text: z.string().min(1).max(5000),
+      userId: z.string(), // Assuming you have user authentication
     }),
   ),
   async (c) => {
-    const { text } = c.req.valid("json");
+    const { text, userId } = c.req.valid("json");
+
+    const hubId = c.req.param("hubId");
+    const channelId = c.req.param("channelId");
 
     const db = dbInstance(c.env);
-    await db.insert(messages).values({
-      text,
+
+    // Check if the hub exists
+    const hubExists = await db.query.hubs.findFirst({
+      where: eq(hubs.id, hubId),
     });
+    if (!hubExists) {
+      return c.json({ error: "Hub not found" }, 404);
+    }
+
+    // Check if the channel exists
+    const channelExists = await db.query.channels.findFirst({
+      where: eq(channels.id, channelId),
+    });
+    if (!channelExists) {
+      return c.json({ error: "Channel not found" }, 404);
+    }
+
+    // Insert the message into the database
+    const message = await db
+      .insert(messages)
+      .values({
+        text,
+        channelId,
+        userId,
+        createdAt: new Date(),
+      })
+      .returning();
 
     return c.json({
       success: true,
+      message: message[0], // Returning the inserted message data
     });
   },
 );
 
 export default chat;
-

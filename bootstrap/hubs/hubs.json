@@ -1,0 +1,17 @@
+{
+  "foodies": {
+    "name": "Foodies",
+    "description": "A haven for food enthusiasts to explore flavors and share culinary adventures",
+    "channels": ["general", "recipes", "reviews"]
+  },
+  "nomads": {
+    "name": "Nomads",
+    "description": "Connect with fellow travelers and embrace the spirit of wanderlust!",
+    "channels": ["general", "tech", "travel"]
+  },
+  "stargazers": {
+    "name": "Stargazers",
+    "description": "Dedicated to the wonders of the night sky and celestial exploration",
+    "channels": ["general", "news", "night-sky"]
+  }
+}
