@@ -3,6 +3,7 @@ import {
   sqliteTable as st,
   integer as int,
 } from "drizzle-orm/sqlite-core";
+import { relations } from "drizzle-orm";
 import { nanoid } from "nanoid";
 
 // some helpers
@@ -38,15 +39,50 @@ export const otps = st("otp", {
   createdAt,
 });
 
-export const messages = st("message", {
+export const hubs = st("hub", {
   id: idPrimary,
-  text: text("text", { length: 5000 }).notNull(),
-  // for now we goin to have a global chat with no auth
-  // userId: idLike('user_id').notNull(),
-  // channelId: idLike('channel_id').notNull(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
   createdAt,
   updatedAt,
 });
 
-// relations
-// ...
+export const channels = st("channel", {
+  id: idPrimary,
+  name: text("name").notNull(),
+  hubId: idLike("hub_id").notNull(),
+  createdAt,
+  updatedAt,
+});
+
+export const messages = st("message", {
+  id: idPrimary,
+  text: text("text", { length: 5000 }).notNull(),
+  channelId: idLike("channel_id").notNull(),
+  userId: idLike("user_id").notNull(),
+  createdAt,
+  updatedAt,
+});
+
+export const hubRelations = relations(hubs, ({ many }) => ({
+  channels: many(channels),
+}));
+
+export const channelRelations = relations(channels, ({ one, many }) => ({
+  hub: one(hubs, {
+    fields: [channels.hubId],
+    references: [hubs.id],
+  }),
+  messages: many(messages),
+}));
+
+export const messageRelations = relations(messages, ({ one }) => ({
+  channel: one(channels, {
+    fields: [messages.channelId],
+    references: [channels.id],
+  }),
+  user: one(users, {
+    fields: [messages.userId],
+    references: [users.id],
+  }),
+}));

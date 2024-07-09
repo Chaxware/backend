@@ -1,8 +1,8 @@
 import { Hono } from "hono";
+import { Bindings } from "../lib/utils";
+
 import auth from "./routers/auth";
 import chat from "./routers/chat";
-
-import { Bindings } from "../lib/utils";
 
 const app = new Hono<{ Bindings: Bindings }>();
 

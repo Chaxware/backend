@@ -1,5 +1,7 @@
 {
+  "type": "module",
   "scripts": {
+    "bootstrap": "tsx --env-file=.env bootstrap/bootstrap.ts",
     "dev": "wrangler dev src/index.ts",
     "deploy": "wrangler deploy --minify src/index.ts"
   },
@@ -19,8 +21,9 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240403.0",
-    "@types/node": "^20.12.11",
+    "@types/node": "^20.14.10",
     "drizzle-kit": "^0.21.2",
+    "tsx": "^4.16.2",
     "wrangler": "^3.47.0"
   }
 }
