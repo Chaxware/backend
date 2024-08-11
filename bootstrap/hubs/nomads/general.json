@@ -1,0 +1,247 @@
+[
+  {
+    "author": "Wanderlust",
+    "message": "Hello fellow nomads! Where is everyone exploring next?",
+    "time_sent": "2024-06-15T09:00:00Z"
+  },
+  {
+    "author": "ExplorerJane",
+    "message": "Just returned from an amazing trek through the Himalayas. Incredible experience! @Wanderlust you would love it!",
+    "time_sent": "2024-06-15T09:05:00Z"
+  },
+  {
+    "author": "AdventureAlex",
+    "message": "@ExplorerJane Planning a backpacking trip across Europe. Any must-visit places?",
+    "time_sent": "2024-06-15T09:10:00Z"
+  },
+  {
+    "author": "NomadNancy",
+    "message": "Thinking of exploring South America next. Any tips? @GlobetrotterGreg you’ve been there, right?",
+    "time_sent": "2024-06-15T09:15:00Z"
+  },
+  {
+    "author": "GlobetrotterGreg",
+    "message": "Just booked flights to Southeast Asia. Can’t wait to dive into the culture! @NomadNancy South America is amazing, definitely visit Machu Picchu!",
+    "time_sent": "2024-06-15T09:20:00Z"
+  },
+  {
+    "author": "Wanderlust",
+    "message": "@ExplorerJane Remember to pack light and embrace the unexpected!",
+    "time_sent": "2024-06-15T09:25:00Z"
+  },
+  {
+    "author": "ExplorerJane",
+    "message": "Tips for solo travelers: Always trust your instincts and connect with locals.",
+    "time_sent": "2024-06-15T09:30:00Z"
+  },
+  {
+    "author": "AdventureAlex",
+    "message": "Found an amazing hostel in Prague. Highly recommend it!",
+    "time_sent": "2024-06-15T09:35:00Z"
+  },
+  {
+    "author": "NomadNancy",
+    "message": "@AdventureAlex Just tried authentic Peruvian cuisine. Mind-blowing flavors!",
+    "time_sent": "2024-06-15T09:40:00Z"
+  },
+  {
+    "author": "GlobetrotterGreg",
+    "message": "@Wanderlust Exploring ancient temples in Cambodia. The history here is mesmerizing.",
+    "time_sent": "2024-06-15T09:45:00Z"
+  },
+  {
+    "author": "Wanderlust",
+    "message": "How do you manage finances while traveling long-term?",
+    "time_sent": "2024-06-15T09:50:00Z"
+  },
+  {
+    "author": "ExplorerJane",
+    "message": "@Wanderlust Budgeting tip: Use local transportation and eat where the locals eat.",
+    "time_sent": "2024-06-15T09:55:00Z"
+  },
+  {
+    "author": "AdventureAlex",
+    "message": "What are some essential items you always carry in your backpack?",
+    "time_sent": "2024-06-15T10:00:00Z"
+  },
+  {
+    "author": "NomadNancy",
+    "message": "@AdventureAlex A good power bank and a reliable water bottle are must-haves for me.",
+    "time_sent": "2024-06-15T10:05:00Z"
+  },
+  {
+    "author": "GlobetrotterGreg",
+    "message": "Language barrier tips: Learn basic phrases and use translation apps.",
+    "time_sent": "2024-06-15T10:10:00Z"
+  },
+  {
+    "author": "Wanderlust",
+    "message": "Share your most memorable travel story!",
+    "time_sent": "2024-06-15T10:15:00Z"
+  },
+  {
+    "author": "ExplorerJane",
+    "message": "@Wanderlust Getting lost in Tokyo’s streets led to discovering hidden gardens. Magical!",
+    "time_sent": "2024-06-15T10:20:00Z"
+  },
+  {
+    "author": "AdventureAlex",
+    "message": "Hiking the Inca Trail to Machu Picchu was a life-changing experience.",
+    "time_sent": "2024-06-15T10:25:00Z"
+  },
+  {
+    "author": "NomadNancy",
+    "message": "@Wanderlust Watching the sunrise over Angkor Wat. Truly breathtaking.",
+    "time_sent": "2024-06-15T10:30:00Z"
+  },
+  {
+    "author": "GlobetrotterGreg",
+    "message": "Staying with a local family in Vietnam taught me the true meaning of hospitality.",
+    "time_sent": "2024-06-15T10:35:00Z"
+  },
+  {
+    "author": "Wanderlust",
+    "message": "How do you stay connected with loved ones back home?",
+    "time_sent": "2024-06-15T10:40:00Z"
+  },
+  {
+    "author": "ExplorerJane",
+    "message": "@Wanderlust Regular video calls and sharing photos keep my family updated.",
+    "time_sent": "2024-06-15T10:45:00Z"
+  },
+  {
+    "author": "AdventureAlex",
+    "message": "Social media updates and occasional postcards are my go-to methods.",
+    "time_sent": "2024-06-15T10:50:00Z"
+  },
+  {
+    "author": "NomadNancy",
+    "message": "Found a great app for cheap flights. Anyone else use travel apps?",
+    "time_sent": "2024-06-15T10:55:00Z"
+  },
+  {
+    "author": "GlobetrotterGreg",
+    "message": "Travel apps are lifesavers! They make planning so much easier.",
+    "time_sent": "2024-06-15T11:00:00Z"
+  },
+  {
+    "author": "Wanderlust",
+    "message": "Share your favorite travel quote!",
+    "time_sent": "2024-06-15T11:05:00Z"
+  },
+  {
+    "author": "ExplorerJane",
+    "message": "\"The journey not the arrival matters.\" – T.S. Eliot",
+    "time_sent": "2024-06-15T11:10:00Z"
+  },
+  {
+    "author": "AdventureAlex",
+    "message": "\"Travel is the only thing you buy that makes you richer.\" – Unknown",
+    "time_sent": "2024-06-15T11:15:00Z"
+  },
+  {
+    "author": "NomadNancy",
+    "message": "\"To travel is to live.\" – Hans Christian Andersen",
+    "time_sent": "2024-06-15T11:20:00Z"
+  },
+  {
+    "author": "GlobetrotterGreg",
+    "message": "\"Adventure awaits.\" – Unknown",
+    "time_sent": "2024-06-15T11:25:00Z"
+  },
+  {
+    "author": "Wanderlust",
+    "message": "How do you find hidden gems in a new city?",
+    "time_sent": "2024-06-15T11:30:00Z"
+  },
+  {
+    "author": "ExplorerJane",
+    "message": "Exploring neighborhoods on foot and chatting with locals always works!",
+    "time_sent": "2024-06-15T11:35:00Z"
+  },
+  {
+    "author": "AdventureAlex",
+    "message": "Local cafes and markets often lead to unexpected discoveries.",
+    "time_sent": "2024-06-15T11:40:00Z"
+  },
+  {
+    "author": "NomadNancy",
+    "message": "Guidebooks and online forums have great recommendations too.",
+    "time_sent": "2024-06-15T11:45:00Z"
+  },
+  {
+    "author": "GlobetrotterGreg",
+    "message": "Connecting with fellow travelers and hearing their stories uncovers hidden treasures.",
+    "time_sent": "2024-06-15T11:50:00Z"
+  },
+  {
+    "author": "Wanderlust",
+    "message": "What’s your dream travel destination and why?",
+    "time_sent": "2024-06-15T11:55:00Z"
+  },
+  {
+    "author": "ExplorerJane",
+    "message": "@Wanderlust Antarctica! The untouched beauty and wildlife are mesmerizing.",
+    "time_sent": "2024-06-15T12:00:00Z"
+  },
+  {
+    "author": "AdventureAlex",
+    "message": "@Wanderlust Japan during cherry blossom season. The culture and scenery are breathtaking.",
+    "time_sent": "2024-06-15T12:05:00Z"
+  },
+  {
+    "author": "NomadNancy",
+    "message": "@Wanderlust New Zealand for its stunning landscapes and outdoor adventures.",
+    "time_sent": "2024-06-15T12:10:00Z"
+  },
+  {
+    "author": "GlobetrotterGreg",
+    "message": "@Wanderlust Machu Picchu. The history and mystery of the ancient ruins fascinate me.",
+    "time_sent": "2024-06-15T12:15:00Z"
+  },
+  {
+    "author": "Wanderlust",
+    "message": "@ExplorerJane Any advice for dealing with homesickness while on the road?",
+    "time_sent": "2024-06-15T12:20:00Z"
+  },
+  {
+    "author": "ExplorerJane",
+    "message": "Stay connected with loved ones and create a routine that includes familiar activities. @Wanderlust",
+    "time_sent": "2024-06-15T12:25:00Z"
+  },
+  {
+    "author": "AdventureAlex",
+    "message": "Embrace new experiences and remember why you started your journey. @Wanderlust",
+    "time_sent": "2024-06-15T12:30:00Z"
+  },
+  {
+    "author": "NomadNancy",
+    "message": "Keep a journal and document your adventures. It helps to reflect and stay grounded. @Wanderlust",
+    "time_sent": "2024-06-15T12:35:00Z"
+  },
+  {
+    "author": "GlobetrotterGreg",
+    "message": "What’s the longest trip you’ve ever taken? @everyone",
+    "time_sent": "2024-06-15T12:40:00Z"
+  },
+  {
+    "author": "Wanderlust",
+    "message": "@GlobetrotterGreg I traveled across Asia for a year. It was an unforgettable journey!",
+    "time_sent": "2024-06-15T12:45:00Z"
+  },
+  {
+    "author": "ExplorerJane",
+    "message": "@GlobetrotterGreg Six months in South America. Each country had its unique charm.",
+    "time_sent": "2024-06-15T12:50:00Z"
+  },
+  {
+    "author": "AdventureAlex",
+    "message": "@GlobetrotterGreg Spent eight months exploring Europe by train. So many memories!",
+    "time_sent": "2024-06-15T12:55:00Z"
+  },
+  {
+    "author": "NomadNancy",
+    "message": "@GlobetrotterGreg One year working and traveling in Australia. Best decision I ever made!",
+    "time_sent": "2024-06-15T13:00:00Z"
+  }
+]

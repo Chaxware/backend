@@ -1,5 +1,4 @@
 import { Hono } from "hono";
-// import { Bindings } from "../../lib/utils";
 import { zValidator } from "@hono/zod-validator";
 import { upgradeWebSocket } from "hono/cloudflare-workers";
 import { z } from "zod";
@@ -10,7 +9,6 @@ import { handle } from "hono/vercel";
 
 export const runtime = "edge";
 
-// const chat = new Hono<{ Bindings: Bindings }>();
 const chat = new Hono().basePath("/chat");
 
 // WebSocket!
@@ -32,11 +30,7 @@ chat.get(
 
 // Get initial messages
 chat.get("/", async (c) => {
-  const allHubs = await db.query.hubs.findMany({
-    with: {
-      channels: true,
-    },
-  });
+  const allHubs = await db.query.hubs.findMany();
   return c.json({ hubs: allHubs });
 });
 

@@ -10,7 +10,7 @@
 /coverage
 
 # db 
-dev.db
+dev.db*
 
 # next.js
 /.next/

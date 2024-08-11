@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "bootstrap": "tsx bootstrap/bootstrap.ts"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.2.2",
@@ -16,7 +17,6 @@
     "bcrypto": "^5.5.2",
     "buffer": "^6.0.3",
     "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.31.4",
     "hono": "^4.4.12",
     "hono-rate-limiter": "^0.4.0",
     "nanoid": "^5.0.7",
@@ -30,6 +30,8 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "drizzle-kit": "^0.22.8",
+    "drizzle-orm": "^0.31.4",
+    "tsx": "^4.17.0",
     "typescript": "^5"
   }
 }
