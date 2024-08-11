@@ -1,12 +1,20 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { dbInstance } from "../../lib/db";
-import { otps, users } from "../../lib/schema";
+import { db } from "../db";
+import { otps, users } from "../schema";
 import { nanoid, customRandom, random } from "nanoid";
-import { Bindings } from "../../lib/utils";
+import { handle } from "hono/vercel";
 
-const auth = new Hono<{ Bindings: Bindings }>();
+export const runtime = "edge";
+
+const auth = new Hono().basePath("/auth");
+
+auth.get("/", async (c) => {
+  return c.json({
+    message: "Send a POST request bruh...",
+  });
+});
 
 auth.post(
   "/",
@@ -18,7 +26,6 @@ auth.post(
   ),
   async (c) => {
     // TODO: implement error handling when unique constraints and return an error.
-    const db = dbInstance(c.env);
     const { email } = c.req.valid("json");
 
     const id = nanoid();
@@ -43,4 +50,5 @@ auth.post(
   },
 );
 
-export default auth;
+export const GET = handle(auth);
+export const POST = handle(auth);

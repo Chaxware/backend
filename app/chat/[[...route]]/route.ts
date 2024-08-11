@@ -1,13 +1,15 @@
 import { Hono } from "hono";
-import { Bindings } from "../../lib/utils";
 import { zValidator } from "@hono/zod-validator";
 import { upgradeWebSocket } from "hono/cloudflare-workers";
 import { z } from "zod";
-import { dbInstance } from "../../lib/db";
+import { db } from "../../db";
 import { eq } from "drizzle-orm";
-import { hubs, channels, messages } from "../../lib/schema";
+import { hubs, channels, messages } from "../../schema";
+import { handle } from "hono/vercel";
 
-const chat = new Hono<{ Bindings: Bindings }>();
+export const runtime = "edge";
+
+const chat = new Hono().basePath("/chat");
 
 // WebSocket!
 chat.get(
@@ -28,17 +30,11 @@ chat.get(
 
 // Get initial messages
 chat.get("/", async (c) => {
-  const db = dbInstance(c.env);
-  const allHubs = await db.query.hubs.findMany({
-    with: {
-      channels: true,
-    },
-  });
+  const allHubs = await db.query.hubs.findMany();
   return c.json({ hubs: allHubs });
 });
 
 chat.get("/:hubId", async (c) => {
-  const db = dbInstance(c.env);
   const hubId = c.req.param("hubId");
   const hub = await db.query.hubs.findFirst({
     where: eq(hubs.id, hubId),
@@ -53,7 +49,6 @@ chat.get("/:hubId", async (c) => {
 });
 
 chat.get("/:hubId/:channelId", async (c) => {
-  const db = dbInstance(c.env);
   const hubId = c.req.param("hubId");
   const channelId = c.req.param("channelId");
 
@@ -89,8 +84,6 @@ chat.post(
     const hubId = c.req.param("hubId");
     const channelId = c.req.param("channelId");
 
-    const db = dbInstance(c.env);
-
     // Check if the hub exists
     const hubExists = await db.query.hubs.findFirst({
       where: eq(hubs.id, hubId),
@@ -125,4 +118,5 @@ chat.post(
   },
 );
 
-export default chat;
+export const GET = handle(chat);
+export const POST = handle(chat);

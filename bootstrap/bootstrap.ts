@@ -1,5 +1,5 @@
-import { dbInstance } from "../lib/db.js";
-import { hubs, channels, messages } from "../lib/schema.js";
+import { db } from "../app/db";
+import { hubs, channels, messages } from "../app/schema";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -20,10 +20,13 @@ interface MessageData {
 }
 
 async function seedDatabase() {
-  const db = dbInstance({
-    DATABASE_URL: process.env.DATABASE_URL!,
-    DATABASE_TOKEN: process.env.DATABASE_TOKEN!,
-  });
+  const hubExists = (await db.query.hubs.findFirst()) !== undefined;
+  if (hubExists) {
+    console.error("Error: Trying to bootstrap non-empty database");
+    return;
+  }
+
+  console.log("Filling database with sample data");
 
   const hubsData: Record<string, HubData> = JSON.parse(
     await fs.readFile(path.join(__dirname, "hubs/hubs.json"), "utf-8"),
@@ -79,4 +82,4 @@ async function seedDatabase() {
   console.log("Database seeded successfully");
 }
 
-await seedDatabase().catch(console.error);
+seedDatabase().catch(console.error);

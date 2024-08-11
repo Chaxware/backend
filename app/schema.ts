@@ -1,3 +1,5 @@
+
+
 import {
   text,
   sqliteTable as st,
@@ -11,13 +13,16 @@ const timestamp = (n: string) => int(n, { mode: "timestamp" });
 const bool = (n: string) => int(n, { mode: "boolean" });
 
 const idLike = (s: string) => text(s, { length: 21 });
+
 const idPrimary = idLike("id")
   .notNull()
   .primaryKey()
   .$defaultFn(() => nanoid());
+  
 const createdAt = timestamp("created_at")
   .$defaultFn(() => new Date())
   .notNull();
+
 const updatedAt = timestamp("updated_at").$onUpdateFn(() => new Date());
 
 // tables

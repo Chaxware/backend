@@ -1,12 +1,22 @@
-import type { Config } from "drizzle-kit";
+import { config } from "dotenv";
 
-export default {
-  schema: "./lib/schema.ts",
-  out: "./drizzle/",
+config({ path: ".env" });
+
+import { env } from "@/app/env.mjs";
+import { defineConfig } from "drizzle-kit";
+
+export default defineConfig({
+  schema: "./app/schema.ts",
+  out: "./migrations",
   dialect: "sqlite",
   driver: "turso",
-  dbCredentials: {
-    url: process.env["DATABASE_URL"]! as string,
-    authToken: process.env["DATABASE_TOKEN"]! as string,
-  },
-} satisfies Config;
+  dbCredentials:
+    process.env.NODE_ENV === "production"
+      ? {
+          url: env.DATABASE_URL!,
+          authToken: env.DATABASE_TOKEN!,
+        }
+      : {
+          url: "http://127.0.0.1:8080",
+        },
+});
