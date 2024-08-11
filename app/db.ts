@@ -1,13 +1,11 @@
-import { drizzle } from 'drizzle-orm/libsql';
-import { createClient } from '@libsql/client/web';
-import { env } from './env.mjs'
+import { drizzle } from "drizzle-orm/libsql";
+import { createClient } from "@libsql/client/web";
+import { env } from "./env";
+import * as schema from "./schema";
 
-const client = process.env.NODE_ENV === "production" ? createClient({
-  url: env.DATABASE_TOKEN!,
-  authToken: env.DATABASE_URL!,
-}) : createClient({
-  url: "file:dev.db"
-})
+const client = createClient({
+  url: env.DATABASE_URL!,
+  authToken: env.DATABASE_TOKEN!,
+});
 
-export const db = drizzle(client);
-
+export const db = drizzle(client, { schema });

@@ -9,11 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@hono/zod-validator": "^0.2.2",
     "@libsql/client": "^0.7.0",
+    "@noble/hashes": "^1.4.0",
     "@t3-oss/env-nextjs": "^0.10.1",
+    "bcrypto": "^5.5.2",
+    "buffer": "^6.0.3",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.31.4",
     "hono": "^4.4.12",
+    "hono-rate-limiter": "^0.4.0",
+    "nanoid": "^5.0.7",
     "next": "14.2.4",
     "react": "^18",
     "react-dom": "^18",
