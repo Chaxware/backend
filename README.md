@@ -39,8 +39,8 @@ DATABASE_URL="<URL (starts with libsql://)>"
 DATABASE_TOKEN="<database authentication token>"
 ```
 
-- _Important_: You must set the `NODE_ENV` environment variable to `production`
-  if you need to use the cloud database.
+> _Important_: You must set the `NODE_ENV` environment variable to `production`
+> if you need to use the cloud database.
 
 ### Bootstrap _(optional)_
 
@@ -58,15 +58,11 @@ Now, you can finally run the server:
 pnpm dev
 ```
 
-_Note_: Whenever you change the schema, run these commands:
+> _Note_: Whenever you change the schema, run these commands:
 
 1. `npx drizzle-kit generate`: Generating SQL migration files from Drizzle ORM
 2. `npx drizzle-kit migrate`: Push schema changes to database
 
 ## Deploy
 
-- Note: Does not work correctly, TODO
-
-```bash
-npx vercel --prod
-```
+Fork this repo, and create a project in your vercel account by connecting the forked repo.
