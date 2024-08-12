@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { zValidator } from "@hono/zod-validator";
 import { upgradeWebSocket } from "hono/cloudflare-workers";
 import { z } from "zod";
@@ -10,6 +11,8 @@ import { handle } from "hono/vercel";
 export const runtime = "edge";
 
 const chat = new Hono().basePath("/chat");
+
+chat.use("*", cors());
 
 // WebSocket!
 chat.get(

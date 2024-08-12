@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { db } from "../db";
@@ -9,6 +10,8 @@ import { handle } from "hono/vercel";
 export const runtime = "edge";
 
 const auth = new Hono().basePath("/auth");
+
+auth.use("*", cors());
 
 auth.get("/", async (c) => {
   return c.json({
