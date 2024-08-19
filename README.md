@@ -5,7 +5,7 @@
 Clone the repo and install the packages:
 
 ```bash
-cd clone https://github.com/Chaxware/backend.git
+git clone https://github.com/Chaxware/backend.git
 cd backend
 npm install
 ```
