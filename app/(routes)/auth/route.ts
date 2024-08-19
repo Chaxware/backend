@@ -23,13 +23,14 @@ auth.post(
   zValidator(
     "json",
     z.object({
+      username: z.string(),
       email: z.string().email(),
     })
   ),
   async (c) => {
-    const { email } = c.req.valid("json");
+    const { username, email } = c.req.valid("json");
 
-    const response = await createUser(email);
+    const response = await createUser(username, email);
     return c.json(response, response.error ? response.errorCode : 200);
   }
 );
