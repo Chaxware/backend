@@ -3,11 +3,9 @@ import { cors } from "hono/cors";
 import { zValidator } from "@hono/zod-validator";
 // import { upgradeWebSocket } from "hono/cloudflare-workers";
 import { z } from "zod";
-import { eq } from "drizzle-orm";
 import { handle } from "hono/vercel";
 
-import { db } from "@/app/(modules)/db/db";
-import { hubs, channels, messages } from "@/app/(modules)/db/schema";
+import { getAllHubs, getChannelData, getHubData, sendMessage } from "@/app/(modules)/services/chat";
 
 export const runtime = "edge";
 
@@ -34,43 +32,22 @@ chat.use("*", cors());
 
 // Get initial messages
 chat.get("/", async (c) => {
-  const allHubs = await db.query.hubs.findMany();
-  return c.json({ hubs: allHubs });
+  return c.json(await getAllHubs());
 });
 
 chat.get("/:hubId", async (c) => {
   const hubId = c.req.param("hubId");
-  const hub = await db.query.hubs.findFirst({
-    where: eq(hubs.id, hubId),
-    with: {
-      channels: true,
-    },
-  });
-  if (!hub) {
-    return c.json({ error: "Hub not found" }, 404);
-  }
-  return c.json(hub);
+
+  const response = await getHubData(hubId);
+  return c.json(response, response.error ? response.errorCode : 200);
 });
 
 chat.get("/:hubId/:channelId", async (c) => {
   const hubId = c.req.param("hubId");
   const channelId = c.req.param("channelId");
 
-  const channel = await db.query.channels.findFirst({
-    where: eq(channels.id, channelId),
-    with: {
-      messages: {
-        orderBy: (messages, { desc }) => [desc(messages.createdAt)],
-        limit: 50,
-      },
-    },
-  });
-
-  if (!channel || channel.hubId !== hubId) {
-    return c.json({ error: "Channel not found" }, 404);
-  }
-
-  return c.json(channel);
+  const response = await getChannelData(hubId, channelId);
+  return c.json(response, response.error ? response.errorCode : 200);
 });
 
 chat.post(
@@ -84,41 +61,11 @@ chat.post(
   ),
   async (c) => {
     const { text, userId } = c.req.valid("json");
-
     const hubId = c.req.param("hubId");
     const channelId = c.req.param("channelId");
 
-    // Check if the hub exists
-    const hubExists = await db.query.hubs.findFirst({
-      where: eq(hubs.id, hubId),
-    });
-    if (!hubExists) {
-      return c.json({ error: "Hub not found" }, 404);
-    }
-
-    // Check if the channel exists
-    const channelExists = await db.query.channels.findFirst({
-      where: eq(channels.id, channelId),
-    });
-    if (!channelExists) {
-      return c.json({ error: "Channel not found" }, 404);
-    }
-
-    // Insert the message into the database
-    const message = await db
-      .insert(messages)
-      .values({
-        text,
-        channelId,
-        userId,
-        createdAt: new Date(),
-      })
-      .returning();
-
-    return c.json({
-      success: true,
-      message: message[0], // Returning the inserted message data
-    });
+    const response = await sendMessage(text, userId, channelId, hubId);
+    return c.json(response, response.error ? response.errorCode : 201);
   },
 );
 

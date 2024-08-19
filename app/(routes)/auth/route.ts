@@ -2,11 +2,9 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { nanoid, customRandom, random } from "nanoid";
 import { handle } from "hono/vercel";
 
-import { db } from "@/app/(modules)/db/db";
-import { otps, users } from "@/app/(modules)/db/schema";
+import { createUser } from "@/app/(modules)/services/auth";
 
 export const runtime = "edge";
 
@@ -26,32 +24,14 @@ auth.post(
     "json",
     z.object({
       email: z.string().email(),
-    }),
+    })
   ),
   async (c) => {
-    // TODO: implement error handling when unique constraints and return an error.
     const { email } = c.req.valid("json");
 
-    const id = nanoid();
-    await db.insert(users).values({
-      id,
-      email,
-      username: nanoid(5),
-    });
-
-    const num = customRandom("0123456789", 6, random)();
-
-    await db.insert(otps).values({
-      userId: id,
-      number: Number(num),
-    });
-
-    // TODO: Send user otp via email
-
-    return c.json({
-      message: "Email sent, check inbox",
-    });
-  },
+    const response = await createUser(email);
+    return c.json(response, response.error ? response.errorCode : 200);
+  }
 );
 
 export const GET = handle(auth);
