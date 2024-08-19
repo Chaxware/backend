@@ -1,12 +1,13 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { zValidator } from "@hono/zod-validator";
-import { upgradeWebSocket } from "hono/cloudflare-workers";
+// import { upgradeWebSocket } from "hono/cloudflare-workers";
 import { z } from "zod";
-import { db } from "../../db";
 import { eq } from "drizzle-orm";
-import { hubs, channels, messages } from "../../schema";
 import { handle } from "hono/vercel";
+
+import { db } from "@/app/(modules)/db/db";
+import { hubs, channels, messages } from "@/app/(modules)/db/schema";
 
 export const runtime = "edge";
 
@@ -15,21 +16,21 @@ const chat = new Hono().basePath("/chat");
 chat.use("*", cors());
 
 // WebSocket!
-chat.get(
-  "/ws",
-  upgradeWebSocket((c) => {
-    return {
-      onMessage(event, ws) {
-        console.log(`Message from client: ${event.data}`);
-        ws.send("Yo, wussup!");
-      },
+// chat.get(
+//   "/ws",
+//   upgradeWebSocket((c) => {
+//     return {
+//       onMessage(event, ws) {
+//         console.log(`Message from client: ${event.data}`);
+//         ws.send("Yo, wussup!");
+//       },
 
-      onClose: () => {
-        console.log("Connection closed");
-      },
-    };
-  }),
-);
+//       onClose: () => {
+//         console.log("Connection closed");
+//       },
+//     };
+//   }),
+// );
 
 // Get initial messages
 chat.get("/", async (c) => {

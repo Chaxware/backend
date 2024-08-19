@@ -1,12 +1,12 @@
 import { config } from "dotenv";
+import { defineConfig } from "drizzle-kit";
 
 config({ path: ".env" });
 
 import { env } from "@/app/env.mjs";
-import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
-  schema: "./app/schema.ts",
+  schema: "./app/(modules)/db/schema.ts",
   out: "./migrations",
   dialect: "sqlite",
   driver: "turso",

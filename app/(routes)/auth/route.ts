@@ -2,10 +2,11 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { db } from "../db";
-import { otps, users } from "../schema";
 import { nanoid, customRandom, random } from "nanoid";
 import { handle } from "hono/vercel";
+
+import { db } from "@/app/(modules)/db/db";
+import { otps, users } from "@/app/(modules)/db/schema";
 
 export const runtime = "edge";
 

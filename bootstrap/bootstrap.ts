@@ -1,8 +1,9 @@
-import { db } from "../app/db";
-import { hubs, channels, messages } from "../app/schema";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+
+import { db } from "@/app/(modules)/db/db";
+import { hubs, channels, messages } from "@/app/(modules)/db/schema";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
