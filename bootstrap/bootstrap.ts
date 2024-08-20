@@ -3,7 +3,11 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { db } from "@/app/(modules)/db/db";
-import { hubs, channels, messages } from "@/app/(modules)/db/schema";
+import {
+  hubTable,
+  channelTable,
+  messageTable,
+} from "@/app/(modules)/db/schema";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,7 +25,7 @@ interface MessageData {
 }
 
 async function seedDatabase() {
-  const hubExists = (await db.query.hubs.findFirst()) !== undefined;
+  const hubExists = (await db.query.hubTable.findFirst()) !== undefined;
   if (hubExists) {
     console.error("Error: Trying to bootstrap non-empty database");
     return;
@@ -35,7 +39,7 @@ async function seedDatabase() {
 
   for (const [hubKey, hubData] of Object.entries(hubsData)) {
     const [hub] = await db
-      .insert(hubs)
+      .insert(hubTable)
       .values({
         name: hubData.name,
         description: hubData.description,
@@ -46,7 +50,7 @@ async function seedDatabase() {
 
     for (const channelName of hubData.channels) {
       const [channel] = await db
-        .insert(channels)
+        .insert(channelTable)
         .values({
           name: channelName,
           hubId: hub.id,
@@ -64,7 +68,7 @@ async function seedDatabase() {
         );
 
         for (const messageData of messagesData) {
-          await db.insert(messages).values({
+          await db.insert(messageTable).values({
             text: messageData.message,
             channelId: channel.id,
             userId: messageData.author,

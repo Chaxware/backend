@@ -1,93 +1,94 @@
-
-
-import {
-  text,
-  sqliteTable as st,
-  integer as int,
-} from "drizzle-orm/sqlite-core";
+import { sqliteTable as table, text, integer } from "drizzle-orm/sqlite-core";
 import { relations } from "drizzle-orm";
 import { nanoid } from "nanoid";
 
-// some helpers
-const timestamp = (n: string) => int(n, { mode: "timestamp" });
-const bool = (n: string) => int(n, { mode: "boolean" });
+// Custom schema types
+const timestamp = (name: string) => integer(name, { mode: "timestamp" });
 
-const idLike = (s: string) => text(s, { length: 21 });
+const boolean = (name: string) => integer(name, { mode: "boolean" });
 
-const idPrimary = idLike("id")
+const id = (name: string) => text(name, { length: 21 });
+
+const idPrimary = id("id")
   .notNull()
   .primaryKey()
   .$defaultFn(() => nanoid());
-  
+
 const createdAt = timestamp("created_at")
   .$defaultFn(() => new Date())
   .notNull();
 
 const updatedAt = timestamp("updated_at").$onUpdateFn(() => new Date());
 
-// tables
-export const users = st("user", {
+// Tables
+export const userTable = table("user", {
   id: idPrimary,
   email: text("email", { length: 200 }).notNull().unique(),
   username: text("username", { length: 30 }).notNull().unique(),
-  verified: bool("verified").default(false).notNull(),
+
+  verified: boolean("verified").default(false).notNull(),
   lastSeen: timestamp("last_seen").$defaultFn(() => new Date()),
 
   createdAt,
   updatedAt,
 });
 
-export const otps = st("otp", {
-  id: idPrimary,
-  number: int("number").notNull(),
-  userId: idLike("user_id").notNull(),
-  createdAt,
-});
-
-export const hubs = st("hub", {
+export const hubTable = table("hub", {
   id: idPrimary,
   name: text("name").notNull(),
   description: text("description").notNull(),
+
   createdAt,
   updatedAt,
 });
 
-export const channels = st("channel", {
+export const channelTable = table("channel", {
   id: idPrimary,
   name: text("name").notNull(),
-  hubId: idLike("hub_id").notNull(),
+  hubId: id("hub_id").notNull(),
+
   createdAt,
   updatedAt,
 });
 
-export const messages = st("message", {
+export const messageTable = table("message", {
   id: idPrimary,
   text: text("text", { length: 5000 }).notNull(),
-  channelId: idLike("channel_id").notNull(),
-  userId: idLike("user_id").notNull(),
+  userId: id("user_id").notNull(),
+  channelId: id("channel_id").notNull(),
+
   createdAt,
   updatedAt,
 });
 
-export const hubRelations = relations(hubs, ({ many }) => ({
-  channels: many(channels),
+export const otpTable = table("otp", {
+  id: idPrimary,
+  number: integer("number").notNull(),
+  userId: id("user_id").notNull(),
+
+  createdAt,
+});
+
+// Relations
+export const hubRelations = relations(hubTable, ({ many }) => ({
+  channels: many(channelTable),
 }));
 
-export const channelRelations = relations(channels, ({ one, many }) => ({
-  hub: one(hubs, {
-    fields: [channels.hubId],
-    references: [hubs.id],
+export const channelRelations = relations(channelTable, ({ one, many }) => ({
+  hub: one(hubTable, {
+    fields: [channelTable.hubId],
+    references: [hubTable.id],
   }),
-  messages: many(messages),
+  messages: many(messageTable),
 }));
 
-export const messageRelations = relations(messages, ({ one }) => ({
-  channel: one(channels, {
-    fields: [messages.channelId],
-    references: [channels.id],
+export const messageRelations = relations(messageTable, ({ one }) => ({
+  channel: one(channelTable, {
+    fields: [messageTable.channelId],
+    references: [channelTable.id],
   }),
-  user: one(users, {
-    fields: [messages.userId],
-    references: [users.id],
+  user: one(userTable, {
+    fields: [messageTable.userId],
+    references: [userTable.id],
   }),
 }));
