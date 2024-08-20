@@ -23,8 +23,11 @@ const updatedAt = timestamp("updated_at").$onUpdateFn(() => new Date());
 // Tables
 export const userTable = table("user", {
   id: idPrimary,
-  email: text("email", { length: 200 }).notNull().unique(),
-  username: text("username", { length: 30 }).notNull().unique(),
+  email: text("email", { length: 254 }).notNull().unique(),
+  username: text("username", { length: 32 }).notNull().unique(),
+  displayName: text("display_name", { length: 32 }),
+  avatar: text("avatar"),
+  about: text("about", { length: 1000 }),
 
   verified: boolean("verified").default(false).notNull(),
   lastSeen: timestamp("last_seen").$defaultFn(() => new Date()),

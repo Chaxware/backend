@@ -7,6 +7,8 @@ import { eq } from "drizzle-orm";
 export async function createUser(
   username: string,
   email: string,
+  displayName?: string,
+  avatar?: string
 ): Promise<any> {
   const emailExists = await db.query.userTable.findFirst({
     where: eq(userTable.email, email),
@@ -28,11 +30,17 @@ export async function createUser(
     };
   }
 
+  if (!displayName) {
+    displayName = username;
+  }
+
   const id = nanoid();
   await db.insert(userTable).values({
     id,
     email,
     username,
+    displayName,
+    avatar,
   });
 
   const num = customRandom("0123456789", 6, random)();
@@ -43,6 +51,6 @@ export async function createUser(
   // TODO: Send user otp via email
 
   return {
-    message: "An OTP has been sent to your email; Check your inbox",
+    message: "User has been created",
   };
 }

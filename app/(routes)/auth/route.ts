@@ -25,12 +25,14 @@ auth.post(
     z.object({
       username: z.string(),
       email: z.string().email(),
+      displayName: z.string().optional(),
+      avatar: z.string().optional(),
     })
   ),
   async (c) => {
-    const { username, email } = c.req.valid("json");
+    const { username, email, displayName, avatar } = c.req.valid("json");
 
-    const response = await createUser(username, email);
+    const response = await createUser(username, email, displayName, avatar);
     return c.json(response, response.error ? response.errorCode : 200);
   }
 );
