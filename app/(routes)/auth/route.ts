@@ -4,7 +4,8 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { handle } from "hono/vercel";
 
-import { createUser } from "@/app/(modules)/services/auth";
+import { db } from "@/app/(modules)/db/db";
+import { User, createUser } from "@/app/(modules)/services/auth";
 
 export const runtime = "edge";
 
@@ -32,7 +33,14 @@ auth.post(
   async (c) => {
     const { username, email, displayName, avatar } = c.req.valid("json");
 
-    const response = await createUser(username, email, displayName, avatar);
+    const user = {
+      username,
+      email,
+      displayName,
+      avatar,
+    };
+
+    const response = await createUser(db, user);
     return c.json(response, response.error ? response.errorCode : 200);
   }
 );
