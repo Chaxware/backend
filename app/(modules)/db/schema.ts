@@ -54,6 +54,7 @@ export const channelTable = table("channel", {
   updatedAt,
 });
 
+// TODO: change `user_id` to `author_id`
 export const messageTable = table("message", {
   id: idPrimary,
   text: text("text", { length: 5000 }).notNull(),

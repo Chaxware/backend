@@ -5,7 +5,13 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { handle } from "hono/vercel";
 
-import { getAllHubs, getChannelData, getHubData, sendMessage } from "@/app/(modules)/services/chat";
+import {
+  getAllHubs,
+  getChannelData,
+  getHubData,
+  sendMessage,
+} from "@/app/(modules)/services/chat";
+import { db } from "@/app/(modules)/db/db";
 
 export const runtime = "edge";
 
@@ -32,13 +38,13 @@ chat.use("*", cors());
 
 // Get initial messages
 chat.get("/", async (c) => {
-  return c.json(await getAllHubs());
+  return c.json(await getAllHubs(db));
 });
 
 chat.get("/:hubId", async (c) => {
   const hubId = c.req.param("hubId");
 
-  const response = await getHubData(hubId);
+  const response = await getHubData(db, hubId);
   return c.json(response, response.error ? response.errorCode : 200);
 });
 
@@ -46,7 +52,7 @@ chat.get("/:hubId/:channelId", async (c) => {
   const hubId = c.req.param("hubId");
   const channelId = c.req.param("channelId");
 
-  const response = await getChannelData(hubId, channelId);
+  const response = await getChannelData(db, channelId);
   return c.json(response, response.error ? response.errorCode : 200);
 });
 
@@ -57,16 +63,19 @@ chat.post(
     z.object({
       text: z.string().min(1).max(5000),
       userId: z.string(), // Assuming you have user authentication
-    }),
+    })
   ),
   async (c) => {
     const { text, userId } = c.req.valid("json");
     const hubId = c.req.param("hubId");
     const channelId = c.req.param("channelId");
 
-    const response = await sendMessage(text, userId, channelId, hubId);
+    const response = await sendMessage(db, channelId, {
+      text,
+      authorId: userId,
+    });
     return c.json(response, response.error ? response.errorCode : 201);
-  },
+  }
 );
 
 export const GET = handle(chat);
