@@ -79,7 +79,7 @@ export async function sendMessage(
     .insert(messageTable)
     .values({
       text: message.text,
-      userId: message.authorId,
+      authorId: message.authorId,
       channelId,
       createdAt: new Date(),
     })

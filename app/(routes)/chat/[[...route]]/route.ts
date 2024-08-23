@@ -62,17 +62,17 @@ chat.post(
     "json",
     z.object({
       text: z.string().min(1).max(5000),
-      userId: z.string(), // Assuming you have user authentication
+      authorId: z.string(), // Assuming you have user authentication
     })
   ),
   async (c) => {
-    const { text, userId } = c.req.valid("json");
+    const { text, authorId } = c.req.valid("json");
     const hubId = c.req.param("hubId");
     const channelId = c.req.param("channelId");
 
     const response = await sendMessage(db, channelId, {
       text,
-      authorId: userId,
+      authorId,
     });
     return c.json(response, response.error ? response.errorCode : 201);
   }
