@@ -54,11 +54,10 @@ export const channelTable = table("channel", {
   updatedAt,
 });
 
-// TODO: change `user_id` to `author_id`
 export const messageTable = table("message", {
   id: idPrimary,
   text: text("text", { length: 5000 }).notNull(),
-  userId: id("user_id").notNull(),
+  authorId: id("author_id").notNull(),
   channelId: id("channel_id").notNull(),
 
   createdAt,
@@ -68,7 +67,7 @@ export const messageTable = table("message", {
 export const otpTable = table("otp", {
   id: idPrimary,
   number: integer("number").notNull(),
-  userId: id("user_id").notNull(),
+  email: text("email", { length: 254 }),
 
   createdAt,
 });
@@ -92,7 +91,7 @@ export const messageRelations = relations(messageTable, ({ one }) => ({
     references: [channelTable.id],
   }),
   user: one(userTable, {
-    fields: [messageTable.userId],
+    fields: [messageTable.authorId],
     references: [userTable.id],
   }),
 }));
