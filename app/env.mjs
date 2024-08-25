@@ -29,5 +29,8 @@ export const env = createEnv({
     ACCESS_TOKEN_SECRET: z
       .string()
       .refine(onProduction, "ACCESS_TOKEN_SECRET missing in production."),
+    REFRESH_TOKEN_SECRET: z
+      .string()
+      .refine(onProduction, "REFRESH_TOKEN_SECRET missing in production."),
   },
 });

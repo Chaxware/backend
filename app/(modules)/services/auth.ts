@@ -5,8 +5,13 @@ import sgMail from "@sendgrid/mail";
 import * as jwt from "jose";
 
 import * as schema from "@/app/(modules)/db/schema";
-import { otpTable, userTable } from "@/app/(modules)/db/schema";
+import {
+  userTable,
+  otpTable,
+  refreshTokenTable,
+} from "@/app/(modules)/db/schema";
 import { env } from "@/app/env.mjs";
+import { db } from "@/app/(modules)/db/db";
 
 // export interface User {
 //   username: string;
@@ -15,55 +20,12 @@ import { env } from "@/app/env.mjs";
 //   avatar?: string;
 // }
 
-// export async function createUser(
-//   db: LibSQLDatabase<typeof schema>,
-//   user: User
-// ): Promise<any> {
-//   const emailExists = await db.query.userTable.findFirst({
-//     where: eq(userTable.email, user.email),
-//   });
-//   if (emailExists) {
-//     return {
-//       error: "A user with this email already exists",
-//       errorCode: 400,
-//     };
-//   }
+// TODO: API endpoint to enter more details about new user
 
-//   const usernameExists = await db.query.userTable.findFirst({
-//     where: eq(userTable.username, user.username),
-//   });
-//   if (usernameExists) {
-//     return {
-//       error: "A user with this username already exists; Try another username",
-//       errorCode: 400,
-//     };
-//   }
-
-//   if (!user.displayName) {
-//     user.displayName = user.username;
-//   }
-
-//   const id = nanoid();
-//   await db.insert(userTable).values({
-//     id,
-//     email: user.email,
-//     username: user.username,
-//     displayName: user.displayName,
-//     avatar: user.avatar,
-//   });
-
-//   const otp = customRandom("0123456789", 6, random)();
-//   await db.insert(otpTable).values({
-//     userId: id,
-//     number: Number(otp),
-//   });
-
-//   sendOtp(user.email, user.username, otp);
-
-//   return {
-//     message: "OTP has been sent to your email. Check your inbox",
-//   };
-// }
+enum AccessTokenGenerationType {
+  LOGIN = "LOGIN",
+  REFRESH = "REFRESH",
+}
 
 export async function sendOTP(
   db: LibSQLDatabase<typeof schema>,
@@ -230,20 +192,77 @@ export async function authenticate(
     return {
       message: "User registered successfully!",
       userId: newUser.id,
-      accessToken: await generateJWT(newUser.id),
+      accessToken: await generateAccessToken(
+        newUser.id,
+        AccessTokenGenerationType.LOGIN
+      ),
+      refreshToken: await generateRefreshToken(newUser.id),
     };
   }
 
   return {
     message: "User login successful!",
-    accessToken: await generateJWT(user.id),
+    accessToken: await generateAccessToken(
+      user.id,
+      AccessTokenGenerationType.LOGIN
+    ),
+    refreshToken: await generateRefreshToken(user.id),
   };
 }
 
-async function generateJWT(userId: string) {
-  const token = await new jwt.SignJWT({ id: userId })
+export async function refreshAccessToken(refreshToken: string) {
+  const { payload } = await jwt.jwtVerify(
+    refreshToken,
+    new TextEncoder().encode(env.REFRESH_TOKEN_SECRET)
+  );
+
+  const tokenEntry = await db.query.refreshTokenTable.findFirst({
+    where: eq(refreshTokenTable.id, payload.jti!),
+  });
+
+  if (!tokenEntry) {
+    return {
+      error: "Invalid refresh token",
+      errorCode: 403,
+    };
+  }
+
+  return {
+    message: "New access token generated",
+    accessToken: await generateAccessToken(
+      payload.sub!,
+      AccessTokenGenerationType.REFRESH
+    ),
+  };
+}
+
+async function generateAccessToken(
+  userId: string,
+  generationType: AccessTokenGenerationType
+) {
+  const secret = new TextEncoder().encode(env.ACCESS_TOKEN_SECRET);
+  const token = await new jwt.SignJWT({ gen: generationType })
     .setProtectedHeader({ alg: "HS256" })
-    .setExpirationTime("5m")
-    .sign(new TextEncoder().encode(env.ACCESS_TOKEN_SECRET));
+    .setSubject(userId)
+    .setExpirationTime("10m")
+    .sign(secret);
+  return token;
+}
+
+async function generateRefreshToken(userId: string) {
+  const tokenId = nanoid();
+
+  const secret = new TextEncoder().encode(env.REFRESH_TOKEN_SECRET);
+  const token = await new jwt.SignJWT()
+    .setProtectedHeader({ alg: "HS256" })
+    .setJti(tokenId)
+    .setSubject(userId)
+    .setExpirationTime("4w")
+    .sign(secret);
+
+  await db.insert(refreshTokenTable).values({
+    id: tokenId,
+  });
+
   return token;
 }

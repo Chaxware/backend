@@ -20,10 +20,12 @@ export const runtime = "edge";
 const chat = new Hono().basePath("/chat");
 
 chat.use("*", cors());
-
-const jwtAuth = jwt({
-  secret: env.ACCESS_TOKEN_SECRET,
-});
+chat.use(
+  "*",
+  jwt({
+    secret: env.ACCESS_TOKEN_SECRET,
+  })
+);
 
 // WebSocket!
 // chat.get(
@@ -43,18 +45,18 @@ const jwtAuth = jwt({
 // );
 
 // Get initial messages
-chat.get("/", jwtAuth, async (c) => {
+chat.get("/", async (c) => {
   return c.json(await getAllHubs(db));
 });
 
-chat.get("/:hubId", jwtAuth, async (c) => {
+chat.get("/:hubId", async (c) => {
   const hubId = c.req.param("hubId");
 
   const response = await getHubData(db, hubId);
   return c.json(response, response.error ? response.errorCode : 200);
 });
 
-chat.get("/:hubId/:channelId", jwtAuth, async (c) => {
+chat.get("/:hubId/:channelId", async (c) => {
   const hubId = c.req.param("hubId");
   const channelId = c.req.param("channelId");
 
@@ -64,7 +66,6 @@ chat.get("/:hubId/:channelId", jwtAuth, async (c) => {
 
 chat.post(
   "/:hubId/:channelId",
-  jwtAuth,
   zValidator(
     "json",
     z.object({

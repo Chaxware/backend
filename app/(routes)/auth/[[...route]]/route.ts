@@ -1,11 +1,17 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { jwt } from "hono/jwt";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { handle } from "hono/vercel";
 
 import { db } from "@/app/(modules)/db/db";
-import { authenticate, sendOTP } from "@/app/(modules)/services/auth";
+import {
+  authenticate,
+  refreshAccessToken,
+  sendOTP,
+} from "@/app/(modules)/services/auth";
+import { env } from "@/app/env.mjs";
 
 export const runtime = "edge";
 
@@ -74,6 +80,17 @@ auth.post(
     const { email, otp } = c.req.valid("json");
 
     const response: any = await authenticate(db, email, otp);
+    return c.json(response, response.error ? response.errorCode : 200);
+  }
+);
+
+auth.post(
+  "/refresh",
+  zValidator("json", z.object({ refreshToken: z.string() })),
+  async (c) => {
+    const { refreshToken } = c.req.valid("json");
+
+    const response: any = await refreshAccessToken(refreshToken);
     return c.json(response, response.error ? response.errorCode : 200);
   }
 );

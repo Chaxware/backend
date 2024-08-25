@@ -72,6 +72,10 @@ export const otpTable = table("otp", {
   createdAt,
 });
 
+export const refreshTokenTable = table("refresh_token", {
+  id: idPrimary,
+});
+
 // Relations
 export const hubRelations = relations(hubTable, ({ many }) => ({
   channels: many(channelTable),
