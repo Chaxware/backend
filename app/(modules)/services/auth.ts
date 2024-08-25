@@ -2,6 +2,7 @@ import { customRandom, nanoid, random } from "nanoid";
 import { eq } from "drizzle-orm";
 import { LibSQLDatabase } from "drizzle-orm/libsql";
 import sgMail from "@sendgrid/mail";
+import * as jwt from "jose";
 
 import * as schema from "@/app/(modules)/db/schema";
 import { otpTable, userTable } from "@/app/(modules)/db/schema";
@@ -226,16 +227,23 @@ export async function authenticate(
         verified: true,
       })
       .returning();
-
     return {
       message: "User registered successfully!",
       userId: newUser.id,
-      jwt: undefined, // TODO: Do this shit
+      accessToken: await generateJWT(newUser.id),
     };
   }
 
   return {
     message: "User login successful!",
-    jwt: undefined,
+    accessToken: await generateJWT(user.id),
   };
+}
+
+async function generateJWT(userId: string) {
+  const token = await new jwt.SignJWT({ id: userId })
+    .setProtectedHeader({ alg: "HS256" })
+    .setExpirationTime("5m")
+    .sign(new TextEncoder().encode(env.ACCESS_TOKEN_SECRET));
+  return token;
 }

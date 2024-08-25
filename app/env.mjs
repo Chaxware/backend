@@ -26,5 +26,8 @@ export const env = createEnv({
     SENDGRID_SENDER_EMAIL: z
       .string()
       .refine(onProduction, "SENDGRID_SENDER_EMAIL missing in production."),
+    ACCESS_TOKEN_SECRET: z
+      .string()
+      .refine(onProduction, "ACCESS_TOKEN_SECRET missing in production."),
   },
 });

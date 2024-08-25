@@ -1,9 +1,11 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { jwt } from "hono/jwt";
 import { zValidator } from "@hono/zod-validator";
 // import { upgradeWebSocket } from "hono/cloudflare-workers";
 import { z } from "zod";
 import { handle } from "hono/vercel";
+import { env } from "@/app/env.mjs";
 
 import {
   getAllHubs,
@@ -18,6 +20,10 @@ export const runtime = "edge";
 const chat = new Hono().basePath("/chat");
 
 chat.use("*", cors());
+
+const jwtAuth = jwt({
+  secret: env.ACCESS_TOKEN_SECRET,
+});
 
 // WebSocket!
 // chat.get(
@@ -37,18 +43,18 @@ chat.use("*", cors());
 // );
 
 // Get initial messages
-chat.get("/", async (c) => {
+chat.get("/", jwtAuth, async (c) => {
   return c.json(await getAllHubs(db));
 });
 
-chat.get("/:hubId", async (c) => {
+chat.get("/:hubId", jwtAuth, async (c) => {
   const hubId = c.req.param("hubId");
 
   const response = await getHubData(db, hubId);
   return c.json(response, response.error ? response.errorCode : 200);
 });
 
-chat.get("/:hubId/:channelId", async (c) => {
+chat.get("/:hubId/:channelId", jwtAuth, async (c) => {
   const hubId = c.req.param("hubId");
   const channelId = c.req.param("channelId");
 
@@ -58,6 +64,7 @@ chat.get("/:hubId/:channelId", async (c) => {
 
 chat.post(
   "/:hubId/:channelId",
+  jwtAuth,
   zValidator(
     "json",
     z.object({
