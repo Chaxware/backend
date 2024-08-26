@@ -23,8 +23,8 @@ chat.use("*", cors());
 chat.use(
   "*",
   jwt({
-    secret: env.ACCESS_TOKEN_SECRET,
-  })
+    secret: env.ACCESS_TOKEN_SECRET!,
+  }),
 );
 
 // WebSocket!
@@ -71,7 +71,7 @@ chat.post(
     z.object({
       text: z.string().min(1).max(5000),
       authorId: z.string(), // Assuming you have user authentication
-    })
+    }),
   ),
   async (c) => {
     const { text, authorId } = c.req.valid("json");
@@ -83,7 +83,7 @@ chat.post(
       authorId,
     });
     return c.json(response, response.error ? response.errorCode : 201);
-  }
+  },
 );
 
 export const GET = handle(chat);
