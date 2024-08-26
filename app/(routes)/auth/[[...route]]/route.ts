@@ -1,17 +1,12 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { jwt } from "hono/jwt";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { handle } from "hono/vercel";
 
 import { db } from "@/app/(modules)/db/db";
-import {
-  authenticate,
-  refreshAccessToken,
-  sendOTP,
-} from "@/app/(modules)/services/auth";
-import { env } from "@/app/env.mjs";
+import { authenticate, sendOTP } from "@/app/(modules)/services/auth/login";
+import { refreshAccessToken } from "@/app/(modules)/services/auth/tokens";
 
 export const runtime = "edge";
 
@@ -57,14 +52,14 @@ auth.post(
     "json",
     z.object({
       email: z.string().email(),
-    })
+    }),
   ),
   async (c) => {
     const { email } = c.req.valid("json");
 
     const response: any = await sendOTP(db, email);
     return c.json(response, response.error ? response.errorCode : 200);
-  }
+  },
 );
 
 auth.post(
@@ -74,14 +69,14 @@ auth.post(
     z.object({
       email: z.string().email(),
       otp: z.string(),
-    })
+    }),
   ),
   async (c) => {
     const { email, otp } = c.req.valid("json");
 
     const response: any = await authenticate(db, email, otp);
     return c.json(response, response.error ? response.errorCode : 200);
-  }
+  },
 );
 
 auth.post(
@@ -92,7 +87,7 @@ auth.post(
 
     const response: any = await refreshAccessToken(refreshToken);
     return c.json(response, response.error ? response.errorCode : 200);
-  }
+  },
 );
 
 export const GET = handle(auth);

@@ -1,17 +1,16 @@
-import { customRandom, nanoid, random } from "nanoid";
+import { customRandom, random } from "nanoid";
 import { eq } from "drizzle-orm";
 import { LibSQLDatabase } from "drizzle-orm/libsql";
 import sgMail from "@sendgrid/mail";
-import * as jwt from "jose";
 
-import * as schema from "@/app/(modules)/db/schema";
-import {
-  userTable,
-  otpTable,
-  refreshTokenTable,
-} from "@/app/(modules)/db/schema";
 import { env } from "@/app/env.mjs";
-import { db } from "@/app/(modules)/db/db";
+import * as schema from "@/app/(modules)/db/schema";
+import { userTable, otpTable } from "@/app/(modules)/db/schema";
+import {
+  AccessTokenGenerationType,
+  generateAccessToken,
+  generateRefreshToken,
+} from "./tokens";
 
 // export interface User {
 //   username: string;
@@ -22,14 +21,9 @@ import { db } from "@/app/(modules)/db/db";
 
 // TODO: API endpoint to enter more details about new user
 
-enum AccessTokenGenerationType {
-  LOGIN = "LOGIN",
-  REFRESH = "REFRESH",
-}
-
 export async function sendOTP(
   db: LibSQLDatabase<typeof schema>,
-  email: string
+  email: string,
 ) {
   const otp = customRandom("0123456789", 6, random)();
 
@@ -138,7 +132,7 @@ function getEmailHTML(otp: string) {
 export async function authenticate(
   db: LibSQLDatabase<typeof schema>,
   email: string,
-  otp: string
+  otp: string,
 ) {
   // Validate OTP
   const otpEntry = await db.query.otpTable.findFirst({
@@ -194,7 +188,7 @@ export async function authenticate(
       userId: newUser.id,
       accessToken: await generateAccessToken(
         newUser.id,
-        AccessTokenGenerationType.LOGIN
+        AccessTokenGenerationType.LOGIN,
       ),
       refreshToken: await generateRefreshToken(newUser.id),
     };
@@ -204,65 +198,8 @@ export async function authenticate(
     message: "User login successful!",
     accessToken: await generateAccessToken(
       user.id,
-      AccessTokenGenerationType.LOGIN
+      AccessTokenGenerationType.LOGIN,
     ),
     refreshToken: await generateRefreshToken(user.id),
   };
-}
-
-export async function refreshAccessToken(refreshToken: string) {
-  const { payload } = await jwt.jwtVerify(
-    refreshToken,
-    new TextEncoder().encode(env.REFRESH_TOKEN_SECRET)
-  );
-
-  const tokenEntry = await db.query.refreshTokenTable.findFirst({
-    where: eq(refreshTokenTable.id, payload.jti!),
-  });
-
-  if (!tokenEntry) {
-    return {
-      error: "Invalid refresh token",
-      errorCode: 403,
-    };
-  }
-
-  return {
-    message: "New access token generated",
-    accessToken: await generateAccessToken(
-      payload.sub!,
-      AccessTokenGenerationType.REFRESH
-    ),
-  };
-}
-
-async function generateAccessToken(
-  userId: string,
-  generationType: AccessTokenGenerationType
-) {
-  const secret = new TextEncoder().encode(env.ACCESS_TOKEN_SECRET);
-  const token = await new jwt.SignJWT({ gen: generationType })
-    .setProtectedHeader({ alg: "HS256" })
-    .setSubject(userId)
-    .setExpirationTime("10m")
-    .sign(secret);
-  return token;
-}
-
-async function generateRefreshToken(userId: string) {
-  const tokenId = nanoid();
-
-  const secret = new TextEncoder().encode(env.REFRESH_TOKEN_SECRET);
-  const token = await new jwt.SignJWT()
-    .setProtectedHeader({ alg: "HS256" })
-    .setJti(tokenId)
-    .setSubject(userId)
-    .setExpirationTime("4w")
-    .sign(secret);
-
-  await db.insert(refreshTokenTable).values({
-    id: tokenId,
-  });
-
-  return token;
 }
