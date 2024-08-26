@@ -27,38 +27,38 @@ export async function sendOTP(
 ) {
   const otp = customRandom("0123456789", 6, random)();
 
-  sgMail.setApiKey(env.SENDGRID_API_KEY);
-  sgMail
-    .send({
+  sgMail.setApiKey(env.SENDGRID_API_KEY!);
+
+  try {
+    await sgMail.send({
       to: email,
       from: {
         name: "Chax",
-        email: env.SENDGRID_SENDER_EMAIL,
+        email: env.SENDGRID_SENDER_EMAIL!,
       },
       subject: "Chax Email Verification OTP",
       text: otp,
       html: getEmailHTML(otp),
-    })
-    .then(async () => {
-      await db.insert(otpTable).values({
-        email: email,
-        number: Number(otp),
-      });
-    })
-    .catch((error) => {
-      const errorMessage: any = {
-        error: error.message,
-        errorCode: 400,
-      };
-
-      console.error(error.message);
-      if (error.response) {
-        errorMessage.errorResponse = error.response.body;
-        console.error(error.response.body);
-      }
-
-      return errorMessage;
     });
+
+    await db.insert(otpTable).values({
+      email: email,
+      number: Number(otp),
+    });
+  } catch (error: any) {
+    const errorMessage: any = {
+      error: error.message,
+      errorCode: 400,
+    };
+
+    console.error(error.message);
+    if (error.response) {
+      errorMessage.errorResponse = error.response.body;
+      console.error(error.response.body);
+    }
+
+    return errorMessage;
+  }
 
   return {
     message: `OTP sent to ${email}. Check your inbox`,

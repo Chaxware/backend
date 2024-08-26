@@ -14,7 +14,7 @@ export enum AccessTokenGenerationType {
 export async function refreshAccessToken(refreshToken: string) {
   const { payload } = await jwt.jwtVerify(
     refreshToken,
-    new TextEncoder().encode(env.REFRESH_TOKEN_SECRET),
+    new TextEncoder().encode(env.REFRESH_TOKEN_SECRET!),
   );
 
   const tokenEntry = await db.query.refreshTokenTable.findFirst({
@@ -41,7 +41,7 @@ export async function generateAccessToken(
   userId: string,
   generationType: AccessTokenGenerationType,
 ) {
-  const secret = new TextEncoder().encode(env.ACCESS_TOKEN_SECRET);
+  const secret = new TextEncoder().encode(env.ACCESS_TOKEN_SECRET!);
   const token = await new jwt.SignJWT({ gen: generationType })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(userId)
@@ -53,7 +53,7 @@ export async function generateAccessToken(
 export async function generateRefreshToken(userId: string) {
   const tokenId = nanoid();
 
-  const secret = new TextEncoder().encode(env.REFRESH_TOKEN_SECRET);
+  const secret = new TextEncoder().encode(env.REFRESH_TOKEN_SECRET!);
   const token = await new jwt.SignJWT()
     .setProtectedHeader({ alg: "HS256" })
     .setJti(tokenId)
