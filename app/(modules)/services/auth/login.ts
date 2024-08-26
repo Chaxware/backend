@@ -129,7 +129,7 @@ function getEmailHTML(otp: string) {
   `;
 }
 
-export async function authenticate(
+export async function authenticateOTP(
   db: LibSQLDatabase<typeof schema>,
   email: string,
   otp: string,

@@ -12,10 +12,20 @@ export enum AccessTokenGenerationType {
 }
 
 export async function refreshAccessToken(refreshToken: string) {
-  const { payload } = await jwt.jwtVerify(
-    refreshToken,
-    new TextEncoder().encode(env.REFRESH_TOKEN_SECRET!),
-  );
+  let payload: any;
+  try {
+    payload = (
+      await jwt.jwtVerify(
+        refreshToken,
+        new TextEncoder().encode(env.REFRESH_TOKEN_SECRET!),
+      )
+    ).payload;
+  } catch (error) {
+    return {
+      error: "Invalid refresh token",
+      errorCode: 403,
+    };
+  }
 
   const tokenEntry = await db.query.refreshTokenTable.findFirst({
     where: eq(refreshTokenTable.id, payload.jti!),

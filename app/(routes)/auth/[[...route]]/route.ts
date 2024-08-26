@@ -5,8 +5,9 @@ import { z } from "zod";
 import { handle } from "hono/vercel";
 
 import { db } from "@/app/(modules)/db/db";
-import { authenticate, sendOTP } from "@/app/(modules)/services/auth/login";
+import { authenticateOTP, sendOTP } from "@/app/(modules)/services/auth/login";
 import { refreshAccessToken } from "@/app/(modules)/services/auth/tokens";
+import { updateUserDetails } from "@/app/(modules)/services/auth/user";
 
 export const runtime = "edge";
 
@@ -19,32 +20,6 @@ auth.get("/", async (c) => {
     message: "Send a POST request bruh...",
   });
 });
-
-// auth.post(
-//   "/",
-//   zValidator(
-//     "json",
-//     z.object({
-//       username: z.string(),
-//       email: z.string().email(),
-//       displayName: z.string().optional(),
-//       avatar: z.string().optional(),
-//     })
-//   ),
-//   async (c) => {
-//     const { username, email, displayName, avatar } = c.req.valid("json");
-
-//     const user = {
-//       username,
-//       email,
-//       displayName,
-//       avatar,
-//     };
-
-//     const response = await createUser(db, user);
-//     return c.json(response, response.error ? response.errorCode : 200);
-//   }
-// );
 
 auth.post(
   "/",
@@ -74,7 +49,7 @@ auth.post(
   async (c) => {
     const { email, otp } = c.req.valid("json");
 
-    const response: any = await authenticate(db, email, otp);
+    const response: any = await authenticateOTP(db, email, otp);
     return c.json(response, response.error ? response.errorCode : 200);
   },
 );
@@ -90,5 +65,32 @@ auth.post(
   },
 );
 
+auth.put(
+  "/update",
+  zValidator(
+    "json",
+    z.object({
+      loginToken: z.string(),
+      username: z.string().max(32).optional(),
+      displayName: z.string().max(32).optional(),
+      avatar: z.string().url().optional(),
+      about: z.string().max(1000).optional(),
+    }),
+  ),
+  async (c) => {
+    const { loginToken, username, displayName, avatar, about } =
+      c.req.valid("json");
+
+    const response: any = await updateUserDetails(db, loginToken, {
+      username,
+      displayName,
+      avatar,
+      about,
+    });
+    return c.json(response, response.error ? response.errorCode : 200);
+  },
+);
+
 export const GET = handle(auth);
 export const POST = handle(auth);
+export const PUT = handle(auth);
