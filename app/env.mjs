@@ -22,15 +22,19 @@ export const env = createEnv({
       .refine(onProduction, "DATABASE_TOKEN missing in production."),
     SENDGRID_API_KEY: z
       .string()
+      .optional()
       .refine(onProduction, "SENDGRID_API_KEY missing in production."),
     SENDGRID_SENDER_EMAIL: z
       .string()
+      .optional()
       .refine(onProduction, "SENDGRID_SENDER_EMAIL missing in production."),
     ACCESS_TOKEN_SECRET: z
       .string()
+      .optional()
       .refine(onProduction, "ACCESS_TOKEN_SECRET missing in production."),
     REFRESH_TOKEN_SECRET: z
       .string()
+      .optional()
       .refine(onProduction, "REFRESH_TOKEN_SECRET missing in production."),
   },
 });

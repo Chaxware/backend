@@ -71,7 +71,7 @@ async function seedDatabase() {
           await db.insert(messageTable).values({
             text: messageData.message,
             channelId: channel.id,
-            userId: messageData.author,
+            authorId: messageData.author,
             createdAt: new Date(messageData.time_sent),
           });
         }
