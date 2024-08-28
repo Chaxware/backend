@@ -41,5 +41,7 @@ next-env.d.ts
 # Development test files
 test.*
 
-# Bun
+# Lockfiles
 bun.lockb
+package-lock.json
+pnpm-lock.yaml
