@@ -40,3 +40,6 @@ next-env.d.ts
 
 # Development test files
 test.*
+
+# Bun
+bun.lockb
