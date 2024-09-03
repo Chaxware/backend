@@ -19,7 +19,7 @@ Next, setup a database (either **local**, or in the **cloud**)
 
 ```bash
 turso dev --db-file dev.db
-bun drizzle-kit migrate
+bunx drizzle-kit migrate
 ```
 
 ### Database (Cloud)
@@ -60,8 +60,8 @@ bun dev
 
 > _Note_: Whenever you change the schema, run these commands:
 
-1. `bun drizzle-kit generate`: Generating SQL migration files from Drizzle ORM
-2. `bun drizzle-kit migrate`: Push schema changes to database
+1. `bunx drizzle-kit generate`: Generating SQL migration files from Drizzle ORM
+2. `bunx drizzle-kit migrate`: Push schema changes to database
 
 ## Deploy
 
