@@ -3,13 +3,18 @@ import { cors } from "hono/cors";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { handle } from "hono/vercel";
+import { jwt } from "hono/jwt";
+import { env } from "@/app/env.mjs";
 
 import { db } from "@/app/(modules)/db/db";
 import { authenticateOTP, sendOTP } from "@/app/(modules)/services/auth/login";
-import { refreshAccessToken } from "@/app/(modules)/services/auth/tokens";
+import {
+  generateAblyTokenRequest,
+  refreshAccessToken,
+} from "@/app/(modules)/services/auth/tokens";
 import { updateUserDetails } from "@/app/(modules)/services/auth/user";
 
-export const runtime = "edge";
+// export const runtime = "edge";
 
 const auth = new Hono().basePath("/auth");
 
@@ -87,6 +92,19 @@ auth.put(
       avatar,
       about,
     });
+    return c.json(response, response.error ? response.errorCode : 200);
+  },
+);
+
+auth.get(
+  "/ably",
+  jwt({
+    secret: env.ACCESS_TOKEN_SECRET!,
+  }),
+  async (c) => {
+    const accessToken = c.req.header("Authorization")!.split(" ")[1];
+
+    const response: any = await generateAblyTokenRequest(accessToken);
     return c.json(response, response.error ? response.errorCode : 200);
   },
 );

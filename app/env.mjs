@@ -23,6 +23,9 @@ export const env = createEnv({
       .string()
       .optional()
       .refine(onProduction, "DATABASE_TOKEN missing in production."),
+    ABLY_API_KEY: z
+      .string()
+      .refine(onProduction, "ABLY_API_KEY missing in production"),
     SENDGRID_API_KEY: z
       .string()
       .refine(onProduction, "SENDGRID_API_KEY missing in production."),

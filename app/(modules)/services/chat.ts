@@ -1,5 +1,8 @@
 import { eq } from "drizzle-orm";
 import { LibSQLDatabase } from "drizzle-orm/libsql";
+import { env } from "@/app/env.mjs";
+
+import Ably from "ably";
 
 import {
   hubTable,
@@ -19,7 +22,7 @@ export async function getAllHubs(db: LibSQLDatabase<typeof schema>) {
 
 export async function getHubData(
   db: LibSQLDatabase<typeof schema>,
-  hubId: string
+  hubId: string,
 ): Promise<any> {
   const hub = await db.query.hubTable.findFirst({
     where: eq(hubTable.id, hubId),
@@ -41,7 +44,7 @@ export async function getHubData(
 
 export async function getChannelData(
   db: LibSQLDatabase<typeof schema>,
-  channelId: string
+  channelId: string,
 ): Promise<any> {
   const channel = await db.query.channelTable.findFirst({
     where: eq(channelTable.id, channelId),
@@ -64,7 +67,7 @@ export async function getChannelData(
 export async function sendMessage(
   db: LibSQLDatabase<typeof schema>,
   channelId: string,
-  message: Message
+  message: Message,
 ): Promise<any> {
   // Check if the channel exists
   const channel = await db.query.channelTable.findFirst({
@@ -86,4 +89,9 @@ export async function sendMessage(
     .returning();
 
   return { success: true, message: sentMessage[0] };
+}
+
+export async function sendRealtimeMessage(channelId: string, message: Message) {
+  const ably = new Ably.Rest({ key: env.ABLY_API_KEY });
+  ably.channels.get(channelId).publish("message", message);
 }

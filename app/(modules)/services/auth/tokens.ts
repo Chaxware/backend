@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 import { eq } from "drizzle-orm";
 import * as jwt from "jose";
+import Ably from "ably";
 
 import { refreshTokenTable } from "@/app/(modules)/db/schema";
 import { env } from "@/app/env.mjs";
@@ -76,4 +77,15 @@ export async function generateRefreshToken(userId: string) {
   });
 
   return token;
+}
+
+export async function generateAblyTokenRequest(accessToken: string) {
+  const payload = jwt.decodeJwt(accessToken);
+
+  const ably = new Ably.Rest({ key: env.ABLY_API_KEY });
+  const tokenRequest = await ably.auth.createTokenRequest({
+    clientId: payload.sub!,
+  });
+
+  return tokenRequest;
 }

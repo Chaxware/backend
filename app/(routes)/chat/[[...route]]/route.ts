@@ -12,10 +12,11 @@ import {
   getChannelData,
   getHubData,
   sendMessage,
+  sendRealtimeMessage,
 } from "@/app/(modules)/services/chat";
 import { db } from "@/app/(modules)/db/db";
 
-export const runtime = "edge";
+// export const runtime = "edge";
 
 const chat = new Hono().basePath("/chat");
 
@@ -83,6 +84,26 @@ chat.post(
       authorId,
     });
     return c.json(response, response.error ? response.errorCode : 201);
+  },
+);
+
+chat.post(
+  "/:hubId/:channelId/rt",
+  zValidator(
+    "json",
+    z.object({
+      message: z.object({
+        text: z.string(),
+        authorId: z.string(),
+      }),
+    }),
+  ),
+  async (c) => {
+    const channelId = c.req.param("channelId");
+    const { message } = c.req.valid("json");
+
+    await sendRealtimeMessage(channelId, message);
+    return c.json({ message: "Message sent" }, 200);
   },
 );
 
