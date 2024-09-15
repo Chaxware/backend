@@ -77,6 +77,9 @@ export async function sendMessage(
     return { error: "Channel not found", errorCode: 404 };
   }
 
+  const ably = new Ably.Rest({ key: env.ABLY_API_KEY });
+  ably.channels.get(channelId).publish("message", message);
+
   // Insert the message into the database
   const sentMessage = await db
     .insert(messageTable)
@@ -89,9 +92,4 @@ export async function sendMessage(
     .returning();
 
   return { success: true, message: sentMessage[0] };
-}
-
-export async function sendRealtimeMessage(channelId: string, message: Message) {
-  const ably = new Ably.Rest({ key: env.ABLY_API_KEY });
-  ably.channels.get(channelId).publish("message", message);
 }

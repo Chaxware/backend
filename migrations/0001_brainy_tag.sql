@@ -19,4 +19,6 @@ INSERT INTO `user` (`id`, `email`, `username`, `verified`, `last_seen`, `created
     SELECT `id`, `email`, `username`, `verified`, `last_seen`, `created_at`, `updated_at`
     FROM `_user_old`;
 --> statement-breakpoint
+DROP TABLE `_user_old`;
+--> statement-breakpoint
 PRAGMA foreign_keys=on;

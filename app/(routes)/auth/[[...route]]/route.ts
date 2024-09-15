@@ -18,7 +18,7 @@ import { updateUserDetails } from "@/app/(modules)/services/auth/user";
 
 const auth = new Hono().basePath("/auth");
 
-auth.use("*", cors());
+auth.use(cors());
 
 auth.get("/", async (c) => {
   return c.json({
