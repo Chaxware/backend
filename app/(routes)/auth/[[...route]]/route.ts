@@ -119,3 +119,4 @@ auth.get("/ably", validateSession(), async (c) => {
 export const GET = handle(auth);
 export const POST = handle(auth);
 export const PUT = handle(auth);
+export const OPTIONS = handle(auth);

@@ -1,6 +1,6 @@
 import { createMiddleware } from "hono/factory";
 import { setCookie } from "hono/cookie";
-import { verifyRequestOrigin } from "lucia";
+// import { verifyRequestOrigin } from "lucia";
 
 import { luciaAuth } from "@/app/(modules)/services/auth/lucia";
 
@@ -19,8 +19,8 @@ export const validateSession = () =>
 
       if (
         !originHeader ||
-        !hostHeader ||
-        !verifyRequestOrigin(originHeader, [hostHeader])
+        !hostHeader
+        // !verifyRequestOrigin(originHeader, [hostHeader])
       ) {
         return c.json({ error: "Invalid Origin headers" }, 403);
       }
@@ -61,7 +61,7 @@ export const validateSession = () =>
     await next();
   });
 
-export declare module "hono" {
+declare module "hono" {
   interface ContextVariableMap {
     user: {
       id: string;

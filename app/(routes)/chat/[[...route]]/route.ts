@@ -70,3 +70,4 @@ chat.post(
 
 export const GET = handle(chat);
 export const POST = handle(chat);
+export const OPTIONS = handle(chat);
