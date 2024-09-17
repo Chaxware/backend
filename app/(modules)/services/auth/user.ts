@@ -1,15 +1,12 @@
-import * as jwt from "jose";
 import { LibSQLDatabase } from "drizzle-orm/libsql";
 import { eq } from "drizzle-orm";
 
-import { env } from "@/app/env.mjs";
-import { AccessTokenGenerationType } from "./tokens";
 import * as schema from "@/app/(modules)/db/schema";
 import { userTable } from "@/app/(modules)/db/schema";
 
 export async function updateUserDetails(
   db: LibSQLDatabase<typeof schema>,
-  loginToken: string,
+  userId: string,
   newDetails: {
     username?: string;
     displayName?: string;
@@ -17,30 +14,8 @@ export async function updateUserDetails(
     about?: string;
   },
 ) {
-  let payload: any;
-  try {
-    payload = (
-      await jwt.jwtVerify(
-        loginToken,
-        new TextEncoder().encode(env.ACCESS_TOKEN_SECRET!),
-      )
-    ).payload;
-  } catch (error) {
-    return {
-      error: "Invalid login token",
-      errorCode: 403,
-    };
-  }
-
-  if (payload.gen! !== AccessTokenGenerationType.LOGIN) {
-    return {
-      error: "Invalid login token",
-      errorCode: 403,
-    };
-  }
-
   const user = await db.query.userTable.findFirst({
-    where: eq(schema.userTable.id, payload.sub!),
+    where: eq(schema.userTable.id, userId),
   });
 
   if (!user) {
@@ -59,7 +34,7 @@ export async function updateUserDetails(
       about: newDetails.about || user.about,
       updatedAt: new Date(),
     })
-    .where(eq(userTable.id, payload.sub!))
+    .where(eq(userTable.id, userId))
     .returning();
 
   return {

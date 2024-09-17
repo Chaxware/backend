@@ -1,10 +1,8 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { jwt } from "hono/jwt";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { handle } from "hono/vercel";
-import { env } from "@/app/env.mjs";
 
 import {
   getAllHubs,
@@ -13,18 +11,18 @@ import {
   sendMessage,
 } from "@/app/(modules)/services/chat";
 import { db } from "@/app/(modules)/db/db";
-import { decodeJwt } from "jose";
-
-// export const runtime = "edge";
+import { validateSession } from "@/app/(modules)/middleware/session";
 
 const chat = new Hono().basePath("/chat");
 
-chat.use(cors());
-chat.use(
-  jwt({
-    secret: env.ACCESS_TOKEN_SECRET!,
-  }),
-);
+chat.use(async (c, next) => {
+  const corsMiddlewareHandler = cors({
+    origin: c.req.header("Origin")!,
+    credentials: true,
+  });
+  return corsMiddlewareHandler(c, next);
+});
+chat.use(validateSession());
 
 // List all hubs
 chat.get("/", async (c) => {
@@ -59,13 +57,12 @@ chat.post(
   async (c) => {
     const { text } = c.req.valid("json");
     const channelId = c.req.param("channelId");
-    const authorId = decodeJwt(
-      c.req.header("Authorization")!.split(" ")[1],
-    ).sub!;
+
+    const user = c.get("user");
 
     const response = await sendMessage(db, channelId, {
       text,
-      authorId,
+      authorId: user.id,
     });
     return c.json(response, response.error ? response.errorCode : 201);
   },

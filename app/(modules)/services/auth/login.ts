@@ -6,20 +6,7 @@ import sgMail from "@sendgrid/mail";
 import { env } from "@/app/env.mjs";
 import * as schema from "@/app/(modules)/db/schema";
 import { userTable, otpTable } from "@/app/(modules)/db/schema";
-import {
-  AccessTokenGenerationType,
-  generateAccessToken,
-  generateRefreshToken,
-} from "./tokens";
-
-// export interface User {
-//   username: string;
-//   email: string;
-//   displayName?: string;
-//   avatar?: string;
-// }
-
-// TODO: API endpoint to enter more details about new user
+import { luciaAuth } from "./lucia";
 
 export async function sendOTP(
   db: LibSQLDatabase<typeof schema>,
@@ -62,6 +49,7 @@ export async function sendOTP(
 
   return {
     message: `OTP sent to ${email}. Check your inbox`,
+    success: true,
   };
 }
 
@@ -169,13 +157,15 @@ export async function authenticateOTP(
   await db.delete(otpTable).where(eq(otpTable.email, email));
 
   // User authentication
-  const user = await db.query.userTable.findFirst({
+  let user: any = await db.query.userTable.findFirst({
     where: eq(userTable.email, email),
   });
 
+  let authMessage = "User login successful!";
+
   // Create a fresh user if not already registered
   if (!user) {
-    const newUser: any = await db
+    user = await db
       .insert(userTable)
       .values({
         email: email,
@@ -183,23 +173,16 @@ export async function authenticateOTP(
         verified: true,
       })
       .returning();
-    return {
-      message: "User registered successfully!",
-      userId: newUser.id,
-      accessToken: await generateAccessToken(
-        newUser.id,
-        AccessTokenGenerationType.LOGIN,
-      ),
-      refreshToken: await generateRefreshToken(newUser.id),
-    };
+
+    authMessage = "User registered successfully!";
   }
 
+  const session = await luciaAuth.createSession(user.id, {});
+
   return {
-    message: "User login successful!",
-    accessToken: await generateAccessToken(
-      user.id,
-      AccessTokenGenerationType.LOGIN,
-    ),
-    refreshToken: await generateRefreshToken(user.id),
+    success: true,
+    message: authMessage,
+    userId: user.id,
+    session,
   };
 }

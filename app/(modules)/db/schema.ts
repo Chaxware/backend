@@ -36,6 +36,16 @@ export const userTable = table("user", {
   updatedAt,
 });
 
+// Handled by Lucia
+export const sessionTable = table("session", {
+  id: text("id").primaryKey(),
+  userId: id("user_id")
+    .notNull()
+    .references(() => userTable.id),
+
+  expiresAt: integer("expires_at").notNull(),
+});
+
 export const hubTable = table("hub", {
   id: idPrimary,
   name: text("name").notNull(),
