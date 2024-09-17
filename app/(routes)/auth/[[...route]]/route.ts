@@ -86,6 +86,7 @@ auth.post(
 
 auth.put(
   "/update",
+  validateSession(),
   zValidator(
     "json",
     z.object({
