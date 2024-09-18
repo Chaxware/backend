@@ -32,11 +32,25 @@ export const env = createEnv({
     SENDGRID_SENDER_EMAIL: z
       .string()
       .refine(onProduction, "SENDGRID_SENDER_EMAIL missing in production."),
-    ACCESS_TOKEN_SECRET: z
+    GITHUB_CLIENT_ID: z
       .string()
-      .refine(onProduction, "ACCESS_TOKEN_SECRET missing in production."),
-    REFRESH_TOKEN_SECRET: z
+      .refine(onProduction, "GITHUB_CLIENT_ID missing in production."),
+    GITHUB_CLIENT_SECRET: z
       .string()
-      .refine(onProduction, "REFRESH_TOKEN_SECRET missing in production."),
+      .refine(onProduction, "GITHUB_CLIENT_SECRET missing in production."),
+    FRONTEND_AUTH_SUCCESS_REDIRECT: z
+      .string()
+      .optional()
+      .refine(
+        onProduction,
+        "FRONTEND_AUTH_SUCCESS_REDIRECT missing in production.",
+      ),
+    FRONTEND_AUTH_FAILURE_REDIRECT: z
+      .string()
+      .optional()
+      .refine(
+        onProduction,
+        "FRONTEND_AUTH_FAILURE_REDIRECT missing in production.",
+      ),
   },
 });

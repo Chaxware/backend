@@ -2,7 +2,10 @@ import { createMiddleware } from "hono/factory";
 import { setCookie } from "hono/cookie";
 // import { verifyRequestOrigin } from "lucia";
 
-import { luciaAuth } from "@/app/(modules)/services/auth/lucia";
+import {
+  luciaAuth,
+  setSessionCookie,
+} from "@/app/(modules)/services/auth/lucia";
 
 export const validateSession = () =>
   createMiddleware<{
@@ -40,20 +43,10 @@ export const validateSession = () =>
     const { session, user } = await luciaAuth.validateSession(sessionId);
     if (!session) {
       const sessionCookie = luciaAuth.createBlankSessionCookie();
-      setCookie(
-        c,
-        sessionCookie.name,
-        sessionCookie.value,
-        sessionCookie.attributes,
-      );
+      setSessionCookie(c, sessionCookie);
     } else if (session.fresh) {
       const sessionCookie = luciaAuth.createSessionCookie(session.id);
-      setCookie(
-        c,
-        sessionCookie.name,
-        sessionCookie.value,
-        sessionCookie.attributes,
-      );
+      setSessionCookie(c, sessionCookie);
     }
 
     c.set("user", user!);

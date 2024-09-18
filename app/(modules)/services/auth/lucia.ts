@@ -1,5 +1,6 @@
 import { Lucia } from "lucia";
 import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
+import { setCookie } from "hono/cookie";
 
 import { userTable, sessionTable } from "@/app/(modules)/db/schema";
 import { db } from "@/app/(modules)/db/db";
@@ -49,4 +50,13 @@ interface DatabaseUserAttributes {
   // lastSeen: Date;
   // createdAt: Date;
   // updatedAt: Date;
+}
+
+export function setSessionCookie(c: any, sessionCookie: any) {
+  setCookie(c, sessionCookie.name, sessionCookie.value, {
+    ...sessionCookie.attributes,
+    sameSite: "None",
+    secure: true,
+    partitioned: true,
+  });
 }

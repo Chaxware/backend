@@ -4,7 +4,7 @@ ALTER TABLE `user` RENAME TO `_user_old`;
 --> statement-breakpoint
 CREATE TABLE `user` (
     `id` text(21) PRIMARY KEY NOT NULL,
-    `email` text(254) NOT NULL,
+    `email` text(254),
     `username` text(32) NOT NULL,
     `display_name` text(32),
     `avatar` text,

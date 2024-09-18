@@ -165,7 +165,8 @@ export async function authenticateOTP(
 
   // Create a fresh user if not already registered
   if (!user) {
-    user = await db
+    // TODO: Check for unique username
+    [user] = await db
       .insert(userTable)
       .values({
         email: email,

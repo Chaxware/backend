@@ -1,4 +1,9 @@
-import { sqliteTable as table, text, integer } from "drizzle-orm/sqlite-core";
+import {
+  sqliteTable as table,
+  text,
+  integer,
+  primaryKey,
+} from "drizzle-orm/sqlite-core";
 import { relations } from "drizzle-orm";
 import { nanoid } from "nanoid";
 
@@ -23,7 +28,7 @@ const updatedAt = timestamp("updated_at").$onUpdateFn(() => new Date());
 // Tables
 export const userTable = table("user", {
   id: idPrimary,
-  email: text("email", { length: 254 }).notNull().unique(),
+  email: text("email", { length: 254 }).unique(),
   username: text("username", { length: 32 }).notNull().unique(),
   displayName: text("display_name", { length: 32 }),
   avatar: text("avatar"),
@@ -45,6 +50,20 @@ export const sessionTable = table("session", {
 
   expiresAt: integer("expires_at").notNull(),
 });
+
+export const oauthAccountTable = table(
+  "oauth_account",
+  {
+    provider: text("provider").notNull(),
+    providerUserId: text("provider_user_id").notNull(),
+    userId: text("user_id").references(() => userTable.id),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({ columns: [table.provider, table.providerUserId] }),
+    };
+  },
+);
 
 export const hubTable = table("hub", {
   id: idPrimary,
